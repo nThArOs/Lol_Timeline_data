@@ -15,3 +15,10 @@ def recursive_items(dict):
 
 #for key, value in recursive_items(timelime_data):
     #print(key, value)
+
+    for list in frames:
+        # print(ele)
+        # pp(list['participantFrames'].keys())
+        ele = ele + 1
+        if '1' in list['participantFrames'].keys():
+            print(list['participantFrames']['1'])

@@ -7,12 +7,13 @@ import tensorflow as tf
 import time
 from tensorflow import keras
 from pprint import pprint as pp
+from scipy.stats import linregress
 
 
 from riotwatcher import LolWatcher, ApiError
 
 
-lol_watcher = LolWatcher('RGAPI-b5c52d42-deef-4af8-a64d-d3c2bc0d5b95')
+lol_watcher = LolWatcher('RGAPI-2be5655a-4aff-4073-91b5-2b6e2f74e3b1')
 my_region = 'euw1'
 my_name = 'ButWhoGonaSTOPme'
 me = lol_watcher.summoner.by_name(my_region, my_name)
@@ -31,18 +32,40 @@ pp(frames[2].keys())
 #pp(frames[2]['participantFrames'])
 #pp(frames[2]['timestamp'])
 #pp(frames[2]['events'])
+#info = frames['participantsFrames']
+
+#InfoP1 = pd.DataFrame.from_records(frames, index=['participantsFrames']['1'])
+
+etry = pd.DataFrame.from_dict(frames)
+#eztry = pd.DataFrame.from_records(frames, index="")
 ele = 0
+d = []
 for list in frames:
-    #print(ele)
-    #pp(list['participantFrames'].keys())
-    ele = ele+1
-    if '1' in list['participantFrames'].keys():
-        print(list['participantFrames']['1'])
+    InfoTimeP1 = list['participantFrames']['1']
+    timestampe = list['timestamp']
+    minutes = (timestampe / (1000 * 60)) % 60
+    InfoTimeP1["timestamp"] = timestampe
+    print(InfoTimeP1)
+    d.append(InfoTimeP1)
 
 
 
+dd = pd.DataFrame(d)
+print(dd.columns.tolist())
+#dd.plot(x ='timestamp', y='totalGold', kind = 'line')
+matrix = np.array(dd.xp.values,'float')
+print(matrix)
+X = matrix
+X = X/(np.max(X))
+print(X)
+#plt.subplots(1)
+#dd.plot(x ='timestamp', y=['xp','totalGold'], kind = 'line')
+plt.plot(x=dd['timestamp'], y=dd['xp','totalGold'], kind = 'line')
 
+#plt.subplots(2)
+plt.plot(dd['timestamp'],matrix)
 
+plt.show()
 
 #print(data)
 #df = pd.DataFrame.from_dict(timelime_data)
