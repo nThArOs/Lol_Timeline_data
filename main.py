@@ -3,17 +3,17 @@ import matplotlib.pyplot as plt
 import pathlib
 import pandas as pd
 import seaborn as sns
-import tensorflow as tf
+
 import time
-from tensorflow import keras
+
 from pprint import pprint as pp
 from scipy.stats import linregress
-
+from sklearn.linear_model import LinearRegression
 
 from riotwatcher import LolWatcher, ApiError
 
 
-lol_watcher = LolWatcher('RGAPI-2be5655a-4aff-4073-91b5-2b6e2f74e3b1')
+lol_watcher = LolWatcher('RGAPI-bf4a1417-6d46-4ed6-9c02-08bfe2f74368')
 my_region = 'euw1'
 my_name = 'ButWhoGonaSTOPme'
 me = lol_watcher.summoner.by_name(my_region, my_name)
@@ -44,26 +44,58 @@ for list in frames:
     InfoTimeP1 = list['participantFrames']['1']
     timestampe = list['timestamp']
     minutes = (timestampe / (1000 * 60)) % 60
-    InfoTimeP1["timestamp"] = timestampe
+    InfoTimeP1["timestamp"] = minutes
     print(InfoTimeP1)
     d.append(InfoTimeP1)
 
 
 
 dd = pd.DataFrame(d)
-print(dd.columns.tolist())
+#print(dd.columns.tolist())
 #dd.plot(x ='timestamp', y='totalGold', kind = 'line')
-matrix = np.array(dd.xp.values,'float')
-print(matrix)
+matrix = np.array(dd.xp.values, 'float')
+#print(matrix)
 X = matrix
-X = X/(np.max(X))
-print(X)
+X = X / (X * np.max(X))
+#print(X)
+
+#print(dd['timestamp'])
 #plt.subplots(1)
 #dd.plot(x ='timestamp', y=['xp','totalGold'], kind = 'line')
-plt.plot(x=dd['timestamp'], y=dd['xp','totalGold'], kind = 'line')
+#créer un objet reg lin
 
+modeleReg=LinearRegression()
+
+#créer y et X
+xp=dd['xp']
+Xre = np.reshape(xp,(-1, 2))
+#xpp = dd['xp'].values.reshape((13,2))
+print(Xre)
+print(Xre.shape)
+gold=dd['totalGold']
+zime = dd['timestamp']
+res = linregress(Xre,zime)
+print(res)
+
+
+model = LinearRegression()
+model.fit(xp,zime)
+#model = LinearRegression().fit(xp, zime)
+#r_sq = model.score(xpp, zime)
+#print(r_sq)
+
+
+plt.rcParams['figure.figsize']=(10, 6)
+fig,ax = plt.subplots()
+font_used={'fontname':'pristina', 'color':'Black'}
+ax.set_ylabel('timestamp',fontsize=20,**font_used)
+ax.set_xlabel('xp',fontsize=20,**font_used)
+plt.plot(dd['timestamp'],dd['xp'], (res.intercept + res.slope )* dd['xp'])
+
+plt.show()
 #plt.subplots(2)
-plt.plot(dd['timestamp'],matrix)
+#plt.plot(dd['timestamp'], matrix)
+#plt.plot(matrix, dd['timestamp'])
 
 plt.show()
 
