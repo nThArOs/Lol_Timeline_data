@@ -3,17 +3,16 @@ import matplotlib.pyplot as plt
 import pathlib
 import pandas as pd
 import seaborn as sns
-
 import time
-
 from pprint import pprint as pp
 from scipy.stats import linregress
 from sklearn.linear_model import LinearRegression
-
 from riotwatcher import LolWatcher, ApiError
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.model_selection import cross_val_score
+from sklearn.feature_selection import mutual_info_regression
 
-
-lol_watcher = LolWatcher('RGAPI-bf4a1417-6d46-4ed6-9c02-08bfe2f74368')
+lol_watcher = LolWatcher('RGAPI-36daa904-8348-486e-983e-e91a4dbe4fdc')
 my_region = 'euw1'
 my_name = 'ButWhoGonaSTOPme'
 me = lol_watcher.summoner.by_name(my_region, my_name)
@@ -28,16 +27,10 @@ data = timelime_data['info']
 print(data.keys())
 frames = data['frames']
 #print(frames)
-pp(frames[2].keys())
-#pp(frames[2]['participantFrames'])
-#pp(frames[2]['timestamp'])
-#pp(frames[2]['events'])
-#info = frames['participantsFrames']
+#pp(frames[2].keys())
 
-#InfoP1 = pd.DataFrame.from_records(frames, index=['participantsFrames']['1'])
 
 etry = pd.DataFrame.from_dict(frames)
-#eztry = pd.DataFrame.from_records(frames, index="")
 ele = 0
 d = []
 for list in frames:
@@ -45,52 +38,30 @@ for list in frames:
     timestampe = list['timestamp']
     minutes = (timestampe / (1000 * 60)) % 60
     InfoTimeP1["timestamp"] = minutes
-    print(InfoTimeP1)
+    #print(InfoTimeP1)
     d.append(InfoTimeP1)
 
 
 
 dd = pd.DataFrame(d)
+pp(dd.keys())
+"""
 #print(dd.columns.tolist())
 #dd.plot(x ='timestamp', y='totalGold', kind = 'line')
 matrix = np.array(dd.xp.values, 'float')
 #print(matrix)
 X = matrix
 X = X / (X * np.max(X))
-#print(X)
 
-#print(dd['timestamp'])
-#plt.subplots(1)
-#dd.plot(x ='timestamp', y=['xp','totalGold'], kind = 'line')
-#créer un objet reg lin
-
-modeleReg=LinearRegression()
-
-#créer y et X
 xp=dd['xp']
-Xre = np.reshape(xp,(-1, 2))
-#xpp = dd['xp'].values.reshape((13,2))
-print(Xre)
-print(Xre.shape)
 gold=dd['totalGold']
 zime = dd['timestamp']
-res = linregress(Xre,zime)
-print(res)
-
-
-model = LinearRegression()
-model.fit(xp,zime)
-#model = LinearRegression().fit(xp, zime)
-#r_sq = model.score(xpp, zime)
-#print(r_sq)
-
-
 plt.rcParams['figure.figsize']=(10, 6)
 fig,ax = plt.subplots()
 font_used={'fontname':'pristina', 'color':'Black'}
 ax.set_ylabel('timestamp',fontsize=20,**font_used)
 ax.set_xlabel('xp',fontsize=20,**font_used)
-plt.plot(dd['timestamp'],dd['xp'], (res.intercept + res.slope )* dd['xp'])
+plt.plot(dd['timestamp'],dd['xp'])
 
 plt.show()
 #plt.subplots(2)
@@ -98,7 +69,7 @@ plt.show()
 #plt.plot(matrix, dd['timestamp'])
 
 plt.show()
-
+"""
 #print(data)
 #df = pd.DataFrame.from_dict(timelime_data)
 #df.to_csv('datatime.csv')
