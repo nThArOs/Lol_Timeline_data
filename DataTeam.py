@@ -114,7 +114,7 @@ while cont < n_games:
 
         blueMaxGPM = None
         redMaxGPM = None
-        m = 1
+        m = 0
         for m in range(len(match_detail['participants'])):
             print(m)
             tmpGPM = match_detail['participants'][m-1]['goldPerMinute']
