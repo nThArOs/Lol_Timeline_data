@@ -120,18 +120,9 @@ while cont < n_games:
             tmpGPM = match_detail['participants'][m-1]['goldPerMinute']
             print(match_detail['participants'][m-1])
             print(tmpGPM)
-            if m <= 5:
-                if (tmpGPM > blueMaxGPM):
-                    blueMaxGPM = tmpGPM
-                blueGPM = blueGPM + tmpGPM
-
-            else:
-                if (tmpGPM > redMaxGPM):
-                    redMaxGPM = tmpGPM
-                redGPM = redGPM + tmpGPM
             m += 1
 
-        print(blueGPM,blueMaxGPM,redGPM,redMaxGPM)
+        #print(blueGPM,blueMaxGPM,redGPM,redMaxGPM)
         lol_dataset.append(lol_dataset_row)
         #print(lol_dataset)
         tmp = pd.DataFrame(lol_dataset)
