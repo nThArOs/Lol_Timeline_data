@@ -14,9 +14,11 @@ from sklearn.feature_selection import mutual_info_regression
 
 df = pd.read_csv('lol_data.csv')
 
-feature_list_blue = ['blueWin','blueKill','blueBaron','blueFirstBaron','blueDragon','blueFirstDragon','blueInhibitor','blueFirstInhibitor','blueTower','blueFirstTower','blueRiftHerald','blueFirstRiftHerald'
-                ,'redWin','redKill','redBaron','redFirstBaron','redDragon','redFirstDragon','redInhibitor','redFirstInhibitor','redTower','redFirstTower','redRiftHerald','redFirstRiftHerald']
-new_df = df[feature_list_blue]
+feature_list_blue = ['blueWin','blueKill','blueBaron','blueFirstBaron','blueDragon','blueFirstDragon','blueInhibitor','blueFirstInhibitor','blueTower','blueFirstTower','blueRiftHerald','blueFirstRiftHerald',
+                'redWin','redKill','redBaron','redFirstBaron','redDragon','redFirstDragon','redInhibitor','redFirstInhibitor','redTower','redFirstTower','redRiftHerald','redFirstRiftHerald']
+
+feature_list = ['blueWin','blueKill','blueFirstKill','blueBaron','blueFirstBaron','blueDragon','blueFirstDragon','blueInhibitor','blueFirstInhibitor','blueRiftHerald','blueFirstRiftHerald','blueTower','blueFirstTower',"blueMaxWardsPlaced","blueSumWardsPlaced","blueMaxMinions","blueSumMinions","blueMaxKill","blueAllKill","blueMaxGpm","blueAllGPM"]
+new_df = df[feature_list]
 
 corr = new_df.corr()
 print('Positive Correlations:')

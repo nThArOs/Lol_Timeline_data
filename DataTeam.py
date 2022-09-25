@@ -11,8 +11,9 @@ from riotwatcher import LolWatcher, ApiError
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import cross_val_score
 from sklearn.feature_selection import mutual_info_regression
+import builtins
 
-lol_watcher = LolWatcher('RGAPI-893ad16c-e01a-4611-966b-aeb012c6f70b')
+lol_watcher = LolWatcher('RGAPI-baedaf02-ba62-4bb0-9900-4085c17763cb')
 my_region = 'euw1'
 my_name = 'ButWhoGonaSTOPme'
 me = lol_watcher.summoner.by_name(my_region, my_name)
@@ -29,6 +30,26 @@ current_champ_list = lol_watcher.data_dragon.champions(champions_version)
 # my_matches = lol_watcher.match.matchlist_by_account(my_region, me['accountId'])
 my_matches = lol_watcher.match.matchlist_by_puuid(my_region, me['puuid'])
 # pp(my_matches)
+master = lol_watcher.league.masters_by_queue(my_region,'RANKED_SOLO_5x5')
+grandMaster = lol_watcher.league.grandmaster_by_queue(my_region,'RANKED_SOLO_5x5')
+chall = lol_watcher.league.challenger_by_queue(my_region,'RANKED_SOLO_5x5')
+
+list_master = master['entries']
+list_gm = grandMaster['entries']
+list_chall = chall['entries']
+
+#print(list_chall.types)
+master = pd.DataFrame.from_dict(list_master)
+gm = pd.DataFrame.from_dict(list_gm)
+chall = pd.DataFrame.from_dict(list_chall)
+
+lead = [master,gm,chall]
+leadboard = pd.concat(lead)
+leadboard = leadboard[['leaguePoints','rank','summonerName','wins','losses','hotStreak','veteran','freshBlood','inactive','summonerId']]
+leadboard = leadboard.sort_values(by=['leaguePoints'], ascending=False)
+leadboard.to_csv("leadboard.csv",index=False)
+print(leadboard)
+histo_leadboard =
 n_games = 100
 Games = {}
 Game_duration = np.zeros(n_games)
@@ -91,38 +112,161 @@ while cont < n_games:
         lol_dataset_row['redTower'] = match_detail['teams'][1]['objectives']['tower']['kills']
         lol_dataset_row['redFirstTower'] = match_detail['teams'][1]['objectives']['tower']['first']
 
-
-
-        #pp(match_detail['teams'])
-
-        """"
-        #ArrayofChampofGold
+        blueMaxGPM = 0
+        redMaxGPM = 0
+        blueGPM = 0
+        redGPM = 0
+        blueMaxKill = 0
+        blueKill = 0
+        redMaxKill = 0
+        redKill = 0
         i = 1
-        champList = []
+
+        #print(match_detail['participants'][1].keys())
+        #print(match_detail['participants'][1])
+
+        #print(match_detail['participants'][1]['wardsPlaced'])
+        blueMaxWardsPlaced = max(match_detail['participants'][0:5], key=lambda d: d['wardsPlaced'])
+        redMaxWardsPlaced = max(match_detail['participants'][5:10], key=lambda d: d['wardsPlaced'])
+        blueSumWardsPlaced = sum(d['wardsPlaced'] for d in match_detail['participants'][0:5])
+        redSumWadsPlaced = sum(d['wardsPlaced'] for d in match_detail['participants'][5:10])
+
+        blueMaxWardsKilled = max(match_detail['participants'][0:5], key=lambda d: d['wardsKilled'])
+        redMaxWardsKilled = max(match_detail['participants'][5:10], key=lambda d: d['wardsKilled'])
+        blueSumWardsKilled = sum(d['wardsKilled'] for d in match_detail['participants'][0:5])
+        redSumWadsKilled = sum(d['wardsKilled'] for d in match_detail['participants'][5:10])
+
+        blueMaxWardsBoughtInGame = max(match_detail['participants'][0:5], key=lambda d: d['visionWardsBoughtInGame'])
+        redMaxWardsBoughtInGame = max(match_detail['participants'][5:10], key=lambda d: d['visionWardsBoughtInGame'])
+        blueSumWardsBoughtInGame = sum(d['visionWardsBoughtInGame'] for d in match_detail['participants'][0:5])
+        redSumWardsBoughtInGame = sum(d['visionWardsBoughtInGame'] for d in match_detail['participants'][5:10])
+
+        blueMaxDetectorWardsPlaced = max(match_detail['participants'][0:5], key=lambda d: d['detectorWardsPlaced'])
+        redMaxDetectorWardsPlaced = max(match_detail['participants'][5:10], key=lambda d: d['detectorWardsPlaced'])
+        blueSumDetectorWardsPlaced = sum(d['detectorWardsPlaced'] for d in match_detail['participants'][0:5])
+        redSumDetectorWardsPlaced = sum(d['detectorWardsPlaced'] for d in match_detail['participants'][5:10])
+
+
+        blueMaxChampExp = max(match_detail['participants'][0:5], key=lambda d: d['champExperience'])
+        redMaxChampExp = max(match_detail['participants'][5:10], key=lambda d: d['champExperience'])
+        blueSumChampExp = sum(d['champExperience'] for d in match_detail['participants'][0:5])
+        redSumChampExp = sum(d['champExperience'] for d in match_detail['participants'][5:10])
+
+        blueMaxChampLvl = max(match_detail['participants'][0:5], key=lambda d: d['champLevel'])
+        redMaxChampLvl = max(match_detail['participants'][5:10], key=lambda d: d['champLevel'])
+        blueSumChampLvl = sum(d['champLevel'] for d in match_detail['participants'][0:5])
+        redSumChampLvl = sum(d['champLevel'] for d in match_detail['participants'][5:10])
+
+        blueMaxDamageDealtToBuildings = max(match_detail['participants'][0:5],
+                                            key=lambda d: d['damageDealtToBuildings'])
+        redMaxDamageDealtToBuildings = max(match_detail['participants'][5:10],
+                                           key=lambda d: d['damageDealtToBuildings'])
+        blueSumDamageDealtToBuildings = sum(d['damageDealtToBuildings'] for d in match_detail['participants'][0:5])
+        redSumDamageDealtToBuildings = sum(d['damageDealtToBuildings'] for d in match_detail['participants'][5:10])
+
+        blueMaxDamageDealtToObjectives = max(match_detail['participants'][0:5],
+                                            key=lambda d: d['damageDealtToObjectives'])
+        redMaxDamageDealtToObjectives = max(match_detail['participants'][5:10],
+                                           key=lambda d: d['damageDealtToObjectives'])
+        blueSumDamageDealtToObjectives = sum(d['damageDealtToObjectives'] for d in match_detail['participants'][0:5])
+        redSumDamageDealtToObjectives = sum(d['damageDealtToObjectives'] for d in match_detail['participants'][5:10])
+
+        blueMaxDamageDealtToTurrets = max(match_detail['participants'][0:5],
+                                             key=lambda d: d['damageDealtToTurrets'])
+        redMaxDamageDealtToTurrets = max(match_detail['participants'][5:10],
+                                            key=lambda d: d['damageDealtToTurrets'])
+        blueSumDamageDealtToTurrets = sum(d['damageDealtToTurrets'] for d in match_detail['participants'][0:5])
+        redSumDamageDealtToTurrets = sum(d['damageDealtToTurrets'] for d in match_detail['participants'][5:10])
+
+
+
+
+
+        '''
+        print(blueMaxWardsPlaced['wardsPlaced'])
+        print(blueSumWardsPlaced)
+        print(blueMaxWardsKilled['wardsKilled'])
+        print(blueSumWardsKilled)
+        print(blueMaxWardsKilled['visionWardsBoughtInGame'])
+        print(blueSumWardsBoughtInGame)
+        '''
+
+        blueMaxMinions = max(match_detail['participants'][0:5], key=lambda d: d['totalMinionsKilled'])
+        redMaxMinions = max(match_detail['participants'][5:10], key=lambda d: d['totalMinionsKilled'])
+        blueSumMinions = sum(d['totalMinionsKilled'] for d in match_detail['participants'][0:5])
+        redSumMinions = sum(d['totalMinionsKilled'] for d in match_detail['participants'][5:10])
+
+
+        lol_dataset_row['blueMaxWardsPlaced'] = blueMaxWardsPlaced['wardsPlaced']
+        lol_dataset_row['redMaxWardsPlaced'] = redMaxWardsPlaced['wardsPlaced']
+        lol_dataset_row['blueSumWardsPlaced'] = blueSumWardsPlaced
+        lol_dataset_row['redSumWardsPlaced'] = redSumWadsPlaced
+
+        lol_dataset_row['blueMaxMinions'] = blueMaxMinions['wardsPlaced']
+        lol_dataset_row['redMaxMinions'] = redMaxMinions['wardsPlaced']
+        lol_dataset_row['blueSumMinions'] = blueSumMinions
+        lol_dataset_row['redSumMinions'] = redSumMinions
+
+        blueMaxAssists = max(match_detail['participants'][0:5], key=lambda d: d['assists'])
+        redMaxAssists = max(match_detail['participants'][5:10], key=lambda d: d['assists'])
+        blueSumAssists = sum(d['assists'] for d in match_detail['participants'][0:5])
+        redSumAssists = sum(d['assists'] for d in match_detail['participants'][5:10])
+
+        blueMaxDeaths = max(match_detail['participants'][0:5], key=lambda d: d['deaths'])
+        redMaxDeaths = max(match_detail['participants'][5:10], key=lambda d: d['deaths'])
+        blueSumDeaths = sum(d['deaths'] for d in match_detail['participants'][0:5])
+        redSumDeaths = sum(d['deaths'] for d in match_detail['participants'][5:10])
+
+        blueMaxDoubleKills = max(match_detail['participants'][0:5], key=lambda d: d['doubleKills'])
+        redMaxDoubleKills = max(match_detail['participants'][5:10], key=lambda d: d['doubleKills'])
+        blueSumDoubleKills = sum(d['doubleKills'] for d in match_detail['participants'][0:5])
+        redSumDoubleKills = sum(d['doubleKills'] for d in match_detail['participants'][5:10])
+
+
+
+        blueMaxBasicPings = max(match_detail['participants'][0:5], key=lambda d: d['basicPings'])
+        redMaxBasicPings = max(match_detail['participants'][5:10], key=lambda d: d['basicPings'])
+        blueSumBasicPings = sum(d['basicPings'] for d in match_detail['participants'][0:5])
+        redSumBasicPings = sum(d['basicPings'] for d in match_detail['participants'][5:10])
+
+
+
+
         for i in range(len(match_detail['participants'])):
             i += 1
-            champLista = {
-                match_detail['participants'][i-1]['championName']: {
-                    "goldEarned": match_detail['participants'][i-1]['goldEarned'],
-                    "goldSpent": match_detail['participants'][i-1]['goldSpent']}
-                }
-            champList.append(champLista)           
-            if i == len(match_detail['participants']):
-                #print(champList)
-                lol_dataset_row['champGold'] = champList
-        """
+            tmpGPM = match_detail['participants'][i-1]['challenges']['goldPerMinute']
+            #print(match_detail['participants'][i-1]['kills'])
+            tmpKill = match_detail['participants'][i-1]['kills']
 
-        blueMaxGPM = None
-        redMaxGPM = None
-        m = 0
-        for m in range(len(match_detail['participants'])):
-            print(m)
-            tmpGPM = match_detail['participants'][m-1]['goldPerMinute']
-            print(match_detail['participants'][m-1])
-            print(tmpGPM)
-            m += 1
+            if i <= 5:
+                if tmpGPM > blueMaxGPM:
+                    blueMaxGPM = tmpGPM
+                blueGPM = blueGPM + tmpGPM
+                if tmpKill > blueMaxKill:
+                    blueMaxKill = tmpKill
+                blueKill = blueKill + tmpKill
+            else:
+                if tmpGPM > redMaxGPM:
+                    redMaxGPM =tmpGPM
+                redGPM = redGPM + tmpGPM
+                if tmpKill > redMaxKill:
+                    redMaxKill = tmpKill
+                redKill = redKill + tmpKill
+        #print(maxKill)
+        lol_dataset_row['blueMaxKill'] = blueMaxKill
+        lol_dataset_row['blueAllKill'] = blueKill
+        lol_dataset_row['redMaxKill'] = redMaxKill
+        lol_dataset_row['redAllKill'] = redKill
 
-        #print(blueGPM,blueMaxGPM,redGPM,redMaxGPM)
+        lol_dataset_row['blueMaxGpm'] = blueMaxGPM
+        lol_dataset_row['blueAllGPM'] = blueGPM
+        lol_dataset_row['redMaxGpm'] = redMaxGPM
+        lol_dataset_row['redAllGpm'] = redGPM
+        #pp(match_detail['participants'][1])
+
+
+
+
         lol_dataset.append(lol_dataset_row)
         #print(lol_dataset)
         tmp = pd.DataFrame(lol_dataset)
@@ -131,5 +275,4 @@ while cont < n_games:
         cont += 1
     except:
         cont += 1
-#print(d.head())
 d.to_csv("lol_data.csv",index=False)
