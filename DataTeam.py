@@ -13,11 +13,11 @@ from sklearn.model_selection import cross_val_score
 from sklearn.feature_selection import mutual_info_regression
 import builtins
 
-lol_watcher = LolWatcher('RGAPI-baedaf02-ba62-4bb0-9900-4085c17763cb')
+lol_watcher = LolWatcher('RGAPI-70918eee-0783-4322-86af-a24e464373a8')
 my_region = 'euw1'
 my_name = 'ButWhoGonaSTOPme'
 me = lol_watcher.summoner.by_name(my_region, my_name)
-my_ranked_stats = lol_watcher.league.by_summoner(my_region, me['id'])
+my_ranked_stats = 2
 # pp(my_matches)
 # 420 = queue id = 5V5 RANKED SOLO
 versions = lol_watcher.data_dragon.versions_for_region(my_region)
@@ -48,8 +48,26 @@ leadboard = pd.concat(lead)
 leadboard = leadboard[['leaguePoints','rank','summonerName','wins','losses','hotStreak','veteran','freshBlood','inactive','summonerId']]
 leadboard = leadboard.sort_values(by=['leaguePoints'], ascending=False)
 leadboard.to_csv("leadboard.csv",index=False)
-print(leadboard)
-histo_leadboard =
+leadboard = leadboard.reset_index()
+#print(leadboard)
+#print(len(leadboard))
+i = 0
+for i in range(len(leadboard)):
+    print(leadboard['summonerName'].iloc[i] +' '+leadboard['summonerId'].iloc[i])
+    print(me['puuid'])
+    summId = leadboard['summonerId'].iloc[i]
+    summName = leadboard['summonerName'].iloc[i]
+    #my_matches = lol_watcher.match.matchlist_by_puuid(my_region, me['puuid'])
+    #lla = lol_watcher.league.by_summoner(my_region, summId)
+    lla = lol_watcher.summoner.by_name(my_region, summName)
+    #al_matches = lol_watcher.match.matchlist_by_puuid(my_region, summName)
+    print("Suoomnername =",summName)
+    print("suommnerPUIID",lla)
+#print(leadboard)
+#leadsize = len(leadboard)
+
+j = 0
+#print(leadboard['summonerName'])
 n_games = 100
 Games = {}
 Game_duration = np.zeros(n_games)
