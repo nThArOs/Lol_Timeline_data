@@ -13,7 +13,7 @@ from sklearn.model_selection import cross_val_score
 from sklearn.feature_selection import mutual_info_regression
 import builtins
 
-lol_watcher = LolWatcher('RGAPI-70918eee-0783-4322-86af-a24e464373a8')
+lol_watcher = LolWatcher('RGAPI-a96e9aaa-8e0f-4fc5-b8b0-66428d5e33ce')
 my_region = 'euw1'
 my_name = 'ButWhoGonaSTOPme'
 me = lol_watcher.summoner.by_name(my_region, my_name)
@@ -27,7 +27,7 @@ summoner_spells_version = versions['n']['summoner']
 items_version = versions['n']['item']
 
 current_champ_list = lol_watcher.data_dragon.champions(champions_version)
-# my_matches = lol_watcher.match.matchlist_by_account(my_region, me['accountId'])
+my_matches = lol_watcher.match.matchlist_by_account(my_region, me['accountId'])
 my_matches = lol_watcher.match.matchlist_by_puuid(my_region, me['puuid'])
 # pp(my_matches)
 master = lol_watcher.league.masters_by_queue(my_region,'RANKED_SOLO_5x5')
@@ -49,22 +49,32 @@ leadboard = leadboard[['leaguePoints','rank','summonerName','wins','losses','hot
 leadboard = leadboard.sort_values(by=['leaguePoints'], ascending=False)
 leadboard.to_csv("leadboard.csv",index=False)
 leadboard = leadboard.reset_index()
+leadboard["puuid"] = ""
 #print(leadboard)
 #print(len(leadboard))
 i = 0
+puuid = []
+""""
 for i in range(len(leadboard)):
-    print(leadboard['summonerName'].iloc[i] +' '+leadboard['summonerId'].iloc[i])
-    print(me['puuid'])
     summId = leadboard['summonerId'].iloc[i]
     summName = leadboard['summonerName'].iloc[i]
-    #my_matches = lol_watcher.match.matchlist_by_puuid(my_region, me['puuid'])
-    #lla = lol_watcher.league.by_summoner(my_region, summId)
-    lla = lol_watcher.summoner.by_name(my_region, summName)
-    #al_matches = lol_watcher.match.matchlist_by_puuid(my_region, summName)
-    print("Suoomnername =",summName)
-    print("suommnerPUIID",lla)
-#print(leadboard)
-#leadsize = len(leadboard)
+    i += 1
+    try:
+        print(i)
+        summ = lol_watcher.summoner.by_name(my_region, summName)
+        leadboard.loc[i, "puuid"] = summ['puuid']
+        print(leadboard.loc[i])
+            #print("Suoomnername =",summName)
+            #print("suommnerPUIID",summ['puuid'])
+        leadboard.to_csv("leadboarduuid.csv", index=False)
+    except:
+        print('fail pour ' + summName)
+
+leadboard.to_csv("leadboarduuid.csv",index=False)
+print('tableau print csv')
+"""
+
+
 
 j = 0
 #print(leadboard['summonerName'])
@@ -77,7 +87,7 @@ cont = 0
 d = pd.DataFrame()
 while cont < n_games:
     try:
-
+        print(my_matches[cont])
         last_match = my_matches[cont]
         match_info = lol_watcher.match.by_id(my_region, last_match)
         match_detail = match_info['info']
